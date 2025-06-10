@@ -3,95 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Run Onboarding - Enhanced</title>
+    <title>Real Run Onboarding App - Enhanced Interactive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5; /* Light grey background */
-            color: #333;
-            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Hide overflow during transitions */
         }
-        .container {
-            max-width: 850px;
-            margin: 40px auto;
-            padding: 30px;
+        .onboarding-container {
             background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 450px; /* Simulating a mobile app width */
+            min-height: 600px; /* Fixed height for app-like feel */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
-        .main-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1a202c; /* Darker title */
-            margin-bottom: 30px;
+        .onboarding-screen {
+            padding: 30px;
             text-align: center;
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            background: linear-gradient(to right, #63b3ed, #4299e1); /* Blue gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease-in-out;
+            transform: translateX(100%); /* Start off-screen to the right */
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
         }
-        .module-group {
+        .onboarding-screen.active {
+            opacity: 1;
+            position: static; /* Take up space when active */
+            transform: translateX(0); /* Move to screen */
+        }
+        .onboarding-screen.active.from-left {
+            transform: translateX(0);
+        }
+        .onboarding-screen.active.from-right {
+            transform: translateX(0);
+        }
+        .onboarding-screen.to-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        .onboarding-screen.to-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .screen-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to top */
+            align-items: center;
+            padding-bottom: 20px; /* Space for buttons */
+            width: 100%; /* Ensure content takes full width */
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+        }
+        .screen-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        .screen-intro-subtitle { /* For the initial welcome screen */
+            font-size: 1.1rem;
+            color: #4a5568;
             margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .screen-image {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Styles for Nested Subtitles */
+        .sub-module-item {
+            width: 100%;
+            margin-bottom: 10px;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             overflow: hidden;
-            transition: all 0.3s ease-in-out;
+            background-color: #f8faff; /* Lighter background for sub-items */
         }
-        .module-group.expanded {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-color: #4299e1;
-        }
-
-        /* Main Title Header (Level 1) */
-        .main-header {
-            background-color: #e0f7fa; /* Very light blue */
-            padding: 18px 25px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease;
-            font-weight: 600;
-            font-size: 1.4rem;
-            color: #2a69ac; /* Slightly darker blue text */
-        }
-        .main-header:hover {
-            background-color: #cceefd;
-        }
-        .main-header .arrow-icon {
-            transition: transform 0.3s ease;
-        }
-        .main-header[aria-expanded="true"] .arrow-icon {
-            transform: rotate(90deg);
-        }
-        .main-content-wrapper {
-            display: none; /* Hidden by default */
-            padding: 15px 25px;
-            background-color: #fbfdff; /* Even lighter for inner content */
-        }
-
-        /* Subtitle Header (Level 2) */
         .sub-header {
             background-color: #e6f7ff; /* Lighter blue for sub-headers */
-            padding: 12px 20px;
+            padding: 12px 15px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #d9edf7;
-            font-weight: 500;
-            font-size: 1.1rem;
+            font-weight: 600;
+            font-size: 1rem;
             color: #3182ce; /* Blue text */
             transition: background-color 0.3s ease;
         }
         .sub-header:hover {
             background-color: #c0e6ff;
-        }
-        .sub-header:last-of-type {
-            border-bottom: none;
         }
         .sub-header .arrow-icon {
             transition: transform 0.3s ease;
@@ -100,372 +128,518 @@
             transform: rotate(90deg);
         }
         .sub-content {
-            padding: 15px 20px;
+            padding: 15px;
             background-color: #ffffff; /* White for final content */
             display: none; /* Hidden by default */
             border-top: 1px dashed #edf2f7;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
             animation: fadeIn 0.4s ease-out;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .sub-content p {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .sub-content ul {
             list-style: disc;
-            margin-left: 25px;
-            margin-bottom: 10px;
+            margin-left: 20px;
+            margin-top: 8px;
         }
         .sub-content ul li {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+        }
+
+        /* --- End Nested Subtitle Styles --- */
+
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 20px 20px; /* Padding inside container */
+            box-sizing: border-box;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .nav-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            min-width: 120px;
+            text-align: center;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .nav-button:active {
+            transform: translateY(0);
+        }
+        .nav-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .progress-indicator {
+            position: absolute;
+            top: 20px;
+            width: calc(100% - 60px); /* Adjust for padding */
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 0 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50; /* Green */
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+        .terms-checkbox-container {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+        }
+        .terms-checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            accent-color: #4CAF50; /* Green accent for checkbox */
+        }
+        .text-link {
+            color: #3182ce;
+            text-decoration: underline;
         }
         .highlight {
             background-color: #fffacd; /* Light yellow background */
             padding: 2px 5px;
             border-radius: 4px;
         }
-        .terms-button-container {
-            text-align: center;
-            margin-top: 40px;
-        }
-        .terms-button {
-            background-color: #48bb78; /* Green */
-            color: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(72, 187, 120, 0.4);
-        }
-        .terms-button:hover {
-            background-color: #38a169; /* Darker green on hover */
-            transform: translateY(-2px);
-        }
-        .terms-button:active {
-            transform: translateY(0);
-        }
-        .image-placeholder {
-            margin: 15px 0;
-            border-radius: 8px;
-            display: block;
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        /* Animation for sub-content */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="main-title">Welcome to Real Run! Your Onboarding Guide 🚀</h1>
+    <div class="onboarding-container">
+        <div class="progress-indicator">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
 
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>1. Start with Real Run 🏃‍♀️🏠</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <div class="onboarding-screen" id="slide-1">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x200/e0f2f7/4299e1?text=Welcome+Icon" alt="Welcome to Real Run" class="screen-image">
+                <h2 class="screen-title">Welcome to Real Run! 👋</h2>
+                <p class="screen-intro-subtitle">Your journey to flexible earnings and active living starts here. Let's get you set up to deliver flyers and get paid!</p>
             </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>1.a How Real Run Works: Your Path to Flexible Earnings! ✨</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Real Run is your go-to platform for earning cash while staying active. We connect you with local real estate agents who need flyers delivered right to specific neighborhoods. Imagine getting paid just for your daily stroll or weekend walk – it's that simple! You're in full control of your schedule, choosing exactly when and where you want to work. It's truly work on your terms! 🧭</p>
-                    <img src="https://via.placeholder.com/600x200?text=Map+showing+delivery+zones" alt="Illustration of a person walking and a map with delivery zones" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>1.b Benefits of Joining: Freedom & Flexibility! 🌟</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Say goodbye to rigid schedules, demanding bosses, and unnecessary pressure! With Real Run, you get complete freedom. Just browse available "drops" (that's what we call jobs!), pick the ones that fit your day, complete the delivery, and get paid. It's the perfect flexible side hustle, or a fantastic way to upgrade your daily walk into an income-generating activity. 💪</p>
-                    <img src="https://via.placeholder.com/600x200?text=Happy+person+walking+with+money+icon" alt="Illustration of a happy person walking with a money icon" class="image-placeholder">
-                </div>
+            <div class="navigation-buttons">
+                <button class="nav-button" id="prevButton" disabled>Previous</button>
+                <button class="nav-button" id="nextButton">Next</button>
             </div>
         </div>
 
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>2. Set Up Your Account: Get Ready to Earn! ⚙️</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>2.a Register for an ABN: Your Business ID! 📝</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Since you'll be working as an independent contractor in Australia, you need an Australian Business Number (ABN) to legally receive payments. Don't worry, it's a straightforward process! You can apply quickly and easily online. </p>
-                    <p>👉 <span class="highlight">Apply here:</span> <a href="https://abr.gov.au/applying-abn" target="_blank" class="text-blue-600 hover:underline">abr.gov.au/applying-abn</a></p>
-                    <img src="https://via.placeholder.com/600x200?text=ABN+application+icon" alt="Illustration of a document with a tick mark and ABN text" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>2.b Add Your Payment Details: Get Paid Smoothly! 🏦</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Time to tell us where to send your hard-earned cash! Simply log into the Real Run app, navigate to <span class="highlight">My Profile → Payment Info</span>, and securely enter your bank account details. This is how you'll receive your payments for all completed drops. Ensure your details are correct to avoid any delays! ✅</p>
-                    <img src="https://via.placeholder.com/600x200?text=Bank+details+screen+in+app" alt="Screenshot mockup of bank details input in an app" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>3. Accept a Drop: Your Next Mission! 📍</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>3.a Find Available Drops in the App: Explore Opportunities! 🗺️</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Ready to start? Open your Real Run app and head over to the <span class="highlight">“Available Drops”</span> section. Here, you'll see all the active jobs displayed on a map, making it easy to find drops in areas convenient for you. New drops are added regularly, so keep an eye out! 👀</p>
-                    <img src="https://via.placeholder.com/600x200?text=App+map+showing+drops" alt="Screenshot mockup of an app map with job markers" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>3.b Review the Drop Details: Know Before You Go! 🧐</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Before accepting, always tap on a drop to see the full details. This includes the <span class="highlight">pay rate</span> (how much you'll earn!), any <span class="highlight">special instructions</span> from the agent, or <span class="highlight">order notes</span>. Understanding these details upfront ensures a smooth and successful delivery. 💼</p>
-                    <img src="https://via.placeholder.com/600x200?text=Drop+details+screen+in+app" alt="Screenshot mockup of a drop detail screen in an app" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>3.c Accept Only What You Can Complete: Responsibility Matters! 🤝</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>We empower you with flexibility, but reliability is key! Only accept a job if you are <span class="highlight">confident you can finish it before its due date</span>. Incomplete or late jobs can lead to penalties or affect your eligibility for future drops. We value your commitment to our agents! ⏱️</p>
-                    <img src="https://via.placeholder.com/600x200?text=Calendar+with+checkmark+icon" alt="Illustration of a calendar with a green checkmark" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>4. Collect the Flyers: Your Delivery Kit! 📦</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>4.a Contact the Agency to Confirm Flyer Availability: Ready for Pickup! 📞</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Once you've accepted a drop, your next step is to pick up the flyers! Use the contact information provided in the app to reach out to the real estate agency. Confirm with them when the flyers will be ready for you to collect. This ensures a quick and efficient pickup! 📲</p>
-                    <img src="https://via.placeholder.com/600x200?text=Phone+icon+and+flyer+box" alt="Illustration of a phone and a box of flyers" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>4.b Mark the Flyers as Collected: Job Locked In! 👍</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>After you've successfully collected the flyers, don't forget to tap <span class="highlight">“Mark as Collected”</span> in the app! This vital step confirms you have the flyers and officially locks the job to your account, letting us know you're ready to start your delivery. ✅</p>
-                    <img src="https://via.placeholder.com/600x200?text=App+screenshot+mark+collected" alt="Screenshot mockup of 'Mark as Collected' button in app" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>5. Deliver the Flyers: On the Move! 🗺️</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>5.a Review Order Notes and Your Map Zone: Plan Your Route! 📍</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Before you hit the pavement, take a moment to double-check any <span class="highlight">specific delivery notes</span> from the agent. Also, ensure you clearly understand your assigned delivery area (your "drop zone") on the in-app map. A quick review helps prevent missed houses and ensures efficient delivery! 🏡</p>
-                    <img src="https://via.placeholder.com/600x200?text=Map+with+delivery+route" alt="Illustration of a map with a highlighted delivery route" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>5.b Track Your Delivery Using Real Run Track: Proof of Progress! 📊</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>This is crucial! You <span class="highlight">must track your entire run</span> using the Real Run app's tracking feature. It's how we verify your excellent work and ensure accurate payment. Remember to:</p>
-                    <ul>
-                        <li><span class="highlight">Start tracking before you begin walking</span> any part of your delivery.</li>
-                        <li>You can <span class="highlight">pause and resume tracking</span> if you need to deliver over multiple days (for larger drops).</li>
-                        <li><span class="highlight">Submit your track</span> only when you are completely finished with the drop.</li>
-                    </ul>
-                    <img src="https://via.placeholder.com/600x200?text=Phone+with+tracking+app" alt="Screenshot mockup of a phone displaying a tracking app" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>5.c Follow the Delivery Path Correctly: Every House Counts! ✅</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>Efficiency and thoroughness are key! When delivering, stick to one side of the road at a time to cover every letterbox systematically. Ensure you <span class="highlight">cover all roads within your designated drop zone</span>. Please do not skip houses or take shortcuts; every delivery is important to the agent! 🎯</p>
-                    <img src="https://via.placeholder.com/600x200?text=Person+delivering+flyers+to+houses" alt="Illustration of a person delivering flyers to multiple houses on a street" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>6. Delivery Guidelines: The Golden Rules! 📜</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>6.a Apply the General Delivery Rules: Simple & Clear! 👍</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>To ensure consistency and quality, always follow these core rules:</p>
-                    <ul>
-                        <li>✅ <span class="highlight">One flyer of each type per letterbox:</span> Don't overload!</li>
-                        <li>✅ <span class="highlight">Follow all agent instructions:</span> They might have specific notes for their drop.</li>
-                        <li>✅ <span class="highlight">Deliver before the due date:</span> Timeliness is key for agents!</li>
-                    </ul>
-                    <img src="https://via.placeholder.com/600x200?text=Checklist+icon+and+flyers" alt="Illustration of a checklist and a stack of flyers" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>6.b Avoid Prohibited Behaviors: What Not to Do! 🚫</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>It's important to maintain our high standards. Please avoid these actions:</p>
-                    <ul>
-                        <li>❌ <span class="highlight">No dumping flyers:</span> Every flyer costs money and time!</li>
-                        <li>❌ <span class="highlight">No deliveries to schools, businesses, or retirement homes:</span> Unless explicitly specified by the agent in their notes, stick to residential letterboxes.</li>
-                    </ul>
-                    <img src="https://via.placeholder.com/600x200?text=Prohibited+actions+icons" alt="Illustration of a 'no dumping' sign and a 'no schools' sign" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>6.c Handle Leftover Flyers Properly: Don't Waste! ♻️</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>If you've completed your assigned area and find you still have some flyers left over, please <span class="highlight">contact the agent directly using the in-app chat feature</span>. They will provide instructions on what to do. Under no circumstances should you dump or discard leftover flyers. We appreciate your diligence! 🙏</p>
-                    <img src="https://via.placeholder.com/600x200?text=Contact+agent+icon+and+leftover+flyers" alt="Illustration of a chat bubble and a few leftover flyers" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>6.d Ensure Tracking Accuracy: Your Payment Depends On It! 📈</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>As mentioned before, your tracking is vital. It <span class="highlight">must clearly show your full walk and coverage</span> of the assigned area. Any poor or fraudulent tracking will unfortunately result in no payment for that drop. We rely on accurate tracking to confirm job completion for our agents. 🚫💰</p>
-                    <img src="https://via.placeholder.com/600x200?text=Accurate+tracking+on+map" alt="Illustration of a phone showing a perfectly tracked route on a map" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>7. Complete Your Job and Get Paid: Mission Accomplished! 🎉</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>7.a Mark the Drop as Complete: Final Step! ✔️</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>You did it! Once you've delivered every flyer and covered the entire zone, tap <span class="highlight">“Mark as Complete”</span> in the app. This signals to us that the job is done. Make sure to upload your final tracking link at this point! 👍</p>
-                    <img src="https://via.placeholder.com/600x200?text=App+screenshot+mark+complete" alt="Screenshot mockup of 'Mark as Complete' button in app" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>7.b Wait for Verification and Payment: Your Earnings Are Coming! 💸</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>After you mark a drop as complete, our team will quickly verify your submission. We check several key things:</p>
-                    <ul>
-                        <li><span class="highlight">Your Tracking link:</span> To confirm your route and coverage.</li>
-                        <li><span class="highlight">Street coverage:</span> Ensuring all required streets were visited.</li>
-                        <li><span class="highlight">Order instructions:</span> That all specific agent requests were met.</li>
-                    </ul>
-                    <p>We may also conduct random spot checks to maintain quality. Once verified, your payment will be sent directly to your bank account <span class="highlight">within 7 days</span>. Remember, if the guidelines aren't followed, payment cannot be processed. We appreciate your honest work! 🏦</p>
-                    <img src="https://via.placeholder.com/600x200?text=Money+being+sent+to+bank" alt="Illustration of money flowing into a bank account" class="image-placeholder">
-                </div>
-            </div>
-        </div>
-
-        <div class="module-group">
-            <div class="main-header" role="button" aria-expanded="false" tabindex="0">
-                <h3>8. Terms & Conditions: Your Agreement! ✍️</h3>
-                <svg class="arrow-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
-            <div class="main-content-wrapper">
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>8.a Confirm Your Understanding and Agreement: Play by the Rules! 🤝</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <p>By proceeding, you're confirming your understanding and agreement to our core principles. This includes:</p>
-                    <ul>
-                        <li><span class="highlight">Following all delivery rules</span> diligently.</li>
-                        <li><span class="highlight">Completing jobs honestly and on time</span>, every time.</li>
-                        <li><span class="highlight">Accepting that rule violations may result in non-payment or deactivation</span> from the platform.</li>
-                    </ul>
-                    <p>We're excited to have you on board, and these guidelines help ensure a fair and efficient system for everyone! ✨</p>
-                    <img src="https://via.placeholder.com/600x200?text=Agreement+contract+icon" alt="Illustration of a contract with a signature" class="image-placeholder">
-                </div>
-
-                <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
-                    <h4>8.b Tap the Confirmation Button: Let's Get Started! 👉</h4>
-                    <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </div>
-                <div class="sub-content">
-                    <div class="terms-button-container">
-                        <button class="terms-button">🔘 I AGREE AND ACCEPT TERMS & CONDITIONS</button>
+        <div class="onboarding-screen" id="slide-2">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/e0f7fa/2a69ac?text=How+It+Works+Map" alt="Map showing delivery zones" class="screen-image">
+                <h2 class="screen-title">1. Start with Real Run 🏃‍♀️🏠</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>1.a How Real Run Works: Your Path to Flexible Earnings! ✨</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </div>
-                    <p class="text-center text-sm text-gray-500 mt-4">By clicking, you acknowledge you've reviewed the Real Run Onboarding Guide.</p>
+                    <div class="sub-content">
+                        <p>Real Run is your go-to platform for earning cash while staying active. We connect you with local real estate agents who need flyers delivered right to specific neighborhoods. Imagine getting paid just for your daily stroll or weekend walk – it's that simple!</p>
+                        <p>You're in full control of your schedule, choosing exactly when and where you want to work.</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>1.b Benefits of Joining: Freedom & Flexibility! 🌟</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Say goodbye to rigid schedules, demanding bosses, and unnecessary pressure! With Real Run, you get complete freedom. Just browse available "drops" (that's what we call jobs!), pick the ones that fit your day, complete the delivery, and get paid.</p>
+                        <p>It’s the perfect flexible side hustle or a fantastic way to upgrade your daily walk into an income-generating activity. 💪</p>
+                    </div>
                 </div>
             </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
         </div>
+
+        <div class="onboarding-screen" id="slide-3">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/e6f7ff/3182ce?text=ABN+Bank" alt="ABN and bank details illustration" class="screen-image">
+                <h2 class="screen-title">2. Set Up Your Account ⚙️</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>2.a Register for an ABN: Your Business ID! 📝</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Since you'll be working as an independent contractor in Australia, you need an **Australian Business Number (ABN)** to legally receive payments. It's a straightforward process, apply quickly and easily online!</p>
+                        <p>👉 Apply here: <a href="https://abr.gov.au/applying-abn" target="_blank" class="text-link">abr.gov.au/applying-abn</a></p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>2.b Add Your Payment Details: Get Paid Smoothly! 🏦</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Time to tell us where to send your hard-earned cash! Simply log into the Real Run app, navigate to <span class="highlight">My Profile → Payment Info</span>, and securely enter your bank account details.</p>
+                        <p>This is how you'll receive your payments for all completed drops. Ensure your details are correct to avoid any delays! ✅</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen" id="slide-4">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/f0f8f9/4a5568?text=Accept+Map" alt="App map showing drops" class="screen-image">
+                <h2 class="screen-title">3. Accept a Drop 📍</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>3.a Find Available Drops: Explore Opportunities! 🗺️</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Open your Real Run app and head over to the **“Available Drops”** section. Here, you'll see all the active jobs displayed on a map, making it easy to find drops in areas convenient for you.</p>
+                        <p>New drops are added regularly, so keep an eye out! 👀</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>3.b Review Drop Details: Know Before You Go! 🧐</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Before accepting, always tap on a drop to see the full details. This includes the <span class="highlight">pay rate</span> (how much you'll earn!) and any <span class="highlight">special instructions</span> or <span class="highlight">order notes</span> from the agent.</p>
+                        <p>Understanding these details upfront ensures a smooth and successful delivery. 💼</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>3.c Accept Only What You Can Complete: Responsibility Matters! 🤝</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>We empower you with flexibility, but reliability is key! Only accept a job if you are <span class="highlight">confident you can finish it before its due date</span>.</p>
+                        <p>Incomplete or late jobs can lead to penalties or affect your eligibility for future drops. We value your commitment to our agents! ⏱️</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen" id="slide-5">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/fbfdff/555?text=Flyer+Collection" alt="Flyer box illustration" class="screen-image">
+                <h2 class="screen-title">4. Collect the Flyers 📦</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>4.a Contact the Agency to Confirm Availability: Ready for Pickup! 📞</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Once you've accepted a drop, your next step is to pick up the flyers! Use the contact information provided in the app to reach out to the real estate agency.</p>
+                        <p>Confirm with them when the flyers will be ready for you to collect. This ensures a quick and efficient pickup! 📲</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>4.b Mark the Flyers as Collected: Job Locked In! 👍</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>After you've successfully collected the flyers, don't forget to tap <span class="highlight">“Mark as Collected”</span> in the app! This vital step confirms you have the flyers and officially locks the job to your account,</p>
+                        <p>...letting us know you're ready to start your delivery. ✅</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen" id="slide-6">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/edf2f7/718096?text=Delivery+Tracking" alt="Phone with tracking app" class="screen-image">
+                <h2 class="screen-title">5. Deliver the Flyers 🗺️</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>5.a Review Order Notes and Your Map Zone: Plan Your Route! 📍</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Before you hit the pavement, take a moment to double-check any <span class="highlight">specific delivery notes</span> from the agent. Also, ensure you clearly understand your assigned delivery area (your "drop zone") on the in-app map.</p>
+                        <p>A quick review helps prevent missed houses and ensures efficient delivery! 🏡</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>5.b Track Your Delivery Using Real Run Track: Proof of Progress! 📊</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>This is crucial! You <span class="highlight">must track your entire run</span> using the Real Run app's tracking feature. It's how we verify your excellent work and ensure accurate payment. Remember to:</p>
+                        <ul>
+                            <li><span class="font-semibold">Start tracking</span> before you begin walking.</li>
+                            <li>You can <span class="font-semibold">pause and resume tracking</span> if needed.</li>
+                            <li><span class="font-semibold">Submit your track</span> only when finished.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>5.c Follow the Delivery Path Correctly: Every House Counts! ✅</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>When delivering, stick to one side of the road at a time to cover every letterbox systematically. Ensure you <span class="highlight">cover all roads within your designated drop zone</span>.</p>
+                        <p>Please do not skip houses or take shortcuts; every delivery is important to the agent! 🎯</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen" id="slide-7">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/e2e8f0/a0aec0?text=Rules+Check" alt="Checklist and forbidden signs" class="screen-image">
+                <h2 class="screen-title">6. Delivery Guidelines 📜</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>6.a Apply the General Delivery Rules: Simple & Clear! 👍</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>To ensure consistency and quality, always follow these core rules:</p>
+                        <ul>
+                            <li>✅ <span class="highlight">One flyer of each type per letterbox:</span> Don't overload!</li>
+                            <li>✅ <span class="highlight">Follow all agent instructions:</span> They might have specific notes.</li>
+                            <li>✅ <span class="highlight">Deliver before the due date:</span> Timeliness is key!</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>6.b Avoid Prohibited Behaviors: What Not to Do! 🚫</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>It's important to maintain our high standards. Please avoid these actions:</p>
+                        <ul>
+                            <li>❌ <span class="highlight">No dumping flyers:</span> Every flyer costs money and time!</li>
+                            <li>❌ <span class="highlight">No deliveries to schools, businesses, or retirement homes:</span> Unless explicitly specified.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>6.c Handle Leftover Flyers Properly: Don't Waste! ♻️</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>If you complete your area and still have flyers left, please <span class="highlight">contact the agent directly using the in-app chat feature</span>. They will provide instructions.</p>
+                        <p>Under no circumstances should you dump or discard leftover flyers. 🙏</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>6.d Ensure Tracking Accuracy: Your Payment Depends On It! 📈</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Your tracking is vital. It <span class="highlight">must clearly show your full walk and coverage</span> of the assigned area. Any poor or fraudulent tracking will unfortunately result in no payment for that drop. 🚫💰</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen" id="slide-8">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/f0e4ff/8a2be2?text=Payment+Process" alt="Money flowing into bank" class="screen-image">
+                <h2 class="screen-title">7. Complete Job & Get Paid! 🎉</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>7.a Mark the Drop as Complete: Final Step! ✔️</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>You did it! Once you've delivered every flyer and covered the entire zone, tap <span class="highlight">“Mark as Complete”</span> in the app. This signals to us that the job is done.</p>
+                        <p>Make sure to upload your final tracking link at this point! 👍</p>
+                    </div>
+                </div>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>7.b Wait for Verification and Payment: Your Earnings Are Coming! 💸</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>Our team will quickly verify your submission (tracking, coverage, instructions). Random spot checks may apply.</p>
+                        <p>Your payment will be sent directly to your bank account <span class="highlight">within 7 days</span>. If the guidelines aren't followed, payment cannot be processed. We appreciate your honest work! 🏦</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button next-button">Next</button>
+            </div>
+        </div>
+
+        <div class="onboarding-screen final-screen" id="slide-9">
+            <div class="screen-content">
+                <img src="https://via.placeholder.com/200x150/d4edda/28a745?text=Terms+Agreement" alt="Terms and conditions illustration" class="screen-image">
+                <h2 class="screen-title">8. Terms & Conditions 🤝</h2>
+                <div class="sub-module-item">
+                    <div class="sub-header" role="button" aria-expanded="false" tabindex="0">
+                        <h4>8.a Confirm Your Understanding and Agreement: Play by the Rules! ✅</h4>
+                        <svg class="arrow-icon w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <div class="sub-content">
+                        <p>By proceeding, you're confirming your understanding and agreement to our core principles. This includes:</p>
+                        <ul>
+                            <li><span class="highlight">Following all delivery rules</span> diligently.</li>
+                            <li><span class="highlight">Completing jobs honestly and on time</span>.</li>
+                            <li><span class="highlight">Accepting that rule violations may result in non-payment or deactivation</span> from the platform.</li>
+                        </ul>
+                        <p>We're excited to have you on board, and these guidelines help ensure a fair and efficient system for everyone! ✨</p>
+                    </div>
+                </div>
+                <div class="terms-checkbox-container">
+                    <input type="checkbox" id="termsCheckbox">
+                    <label for="termsCheckbox">I AGREE AND ACCEPT TERMS & CONDITIONS</label>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-button prev-button">Previous</button>
+                <button class="nav-button nav-finish-button" id="finishButton" disabled>Finish</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // JavaScript for Main Headers (Level 1: Title -> Subtitles)
-        document.querySelectorAll('.main-header').forEach(mainHeader => {
-            mainHeader.addEventListener('click', () => {
-                const contentWrapper = mainHeader.nextElementSibling;
-                const isExpanded = mainHeader.getAttribute('aria-expanded') === 'true';
+        const screens = document.querySelectorAll('.onboarding-screen');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const finishButton = document.getElementById('finishButton');
+        const progressBar = document.getElementById('progressBar');
+        const termsCheckbox = document.getElementById('termsCheckbox');
 
-                // Toggle visibility of the main content wrapper
-                if (isExpanded) {
-                    contentWrapper.style.display = 'none';
-                    mainHeader.setAttribute('aria-expanded', 'false');
-                    mainHeader.closest('.module-group').classList.remove('expanded');
+        let currentSlide = 0;
+        let direction = 'next'; // To control slide animation direction
+
+        function updateProgress() {
+            const progress = (currentSlide / (screens.length - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function showSlide(index) {
+            screens.forEach((screen, i) => {
+                screen.classList.remove('active', 'from-left', 'to-left', 'from-right', 'to-right');
+                if (i === index) {
+                    screen.classList.add('active');
+                    if (direction === 'next') {
+                        screen.classList.add('from-right');
+                    } else {
+                        screen.classList.add('from-left');
+                    }
                 } else {
-                    contentWrapper.style.display = 'block';
-                    mainHeader.setAttribute('aria-expanded', 'true');
-                    mainHeader.closest('.module-group').classList.add('expanded');
+                    screen.style.display = 'none';
                 }
             });
+
+            screens[index].style.display = 'flex'; // Re-display current slide to allow animation to apply
+
+            prevButton.disabled = currentSlide === 0;
+            nextButton.style.display = (currentSlide === screens.length - 1) ? 'none' : 'block';
+            finishButton.style.display = (currentSlide === screens.length - 1) ? 'block' : 'none';
+
+            if (currentSlide === screens.length - 1) {
+                finishButton.disabled = !termsCheckbox.checked;
+            }
+
+            updateProgress();
+        }
+
+        function navigateSlides(step) {
+            const nextSlide = currentSlide + step;
+            if (nextSlide >= 0 && nextSlide < screens.length) {
+                direction = (step > 0) ? 'next' : 'prev';
+
+                if (step > 0) {
+                    screens[currentSlide].classList.add('to-left');
+                } else {
+                    screens[currentSlide].classList.add('to-right');
+                }
+
+                setTimeout(() => {
+                    screens[currentSlide].classList.remove('active');
+                    screens[currentSlide].style.display = 'none';
+
+                    currentSlide = nextSlide;
+                    showSlide(currentSlide);
+                }, 500);
+            }
+        }
+
+        // Event Listeners for Main Navigation Buttons
+        prevButton.addEventListener('click', () => navigateSlides(-1));
+        nextButton.addEventListener('click', () => navigateSlides(1));
+
+        // Use event delegation for dynamically created next/prev buttons on other slides
+        document.querySelector('.onboarding-container').addEventListener('click', (event) => {
+            if (event.target.classList.contains('next-button')) {
+                navigateSlides(1);
+            } else if (event.target.classList.contains('prev-button')) {
+                navigateSlides(-1);
+            }
         });
 
-        // JavaScript for Sub Headers (Level 2: Subtitle -> Text)
+        // Event Listener for Nested Subtitles (Level 2: Subtitle -> Text)
         document.querySelectorAll('.sub-header').forEach(subHeader => {
             subHeader.addEventListener('click', () => {
                 const subContent = subHeader.nextElementSibling;
                 const isExpanded = subHeader.getAttribute('aria-expanded') === 'true';
 
-                // Toggle visibility of the sub-content
                 if (isExpanded) {
                     subContent.style.display = 'none';
                     subHeader.setAttribute('aria-expanded', 'false');
@@ -475,6 +649,28 @@
                 }
             });
         });
+
+        // Terms & Conditions checkbox listener
+        if (termsCheckbox) {
+            termsCheckbox.addEventListener('change', () => {
+                finishButton.disabled = !termsCheckbox.checked;
+            });
+        }
+
+        // Final button action (for demonstration)
+        if (finishButton) {
+            finishButton.addEventListener('click', () => {
+                if (termsCheckbox.checked) {
+                    alert('Congratulations! You have completed the Real Run onboarding. Welcome aboard!');
+                    // Here you would typically redirect the user or enable app features
+                } else {
+                    alert('Please agree to the Terms & Conditions to finish onboarding.');
+                }
+            });
+        }
+
+        // Initialize first slide
+        showSlide(currentSlide);
     </script>
 </body>
 </html>
